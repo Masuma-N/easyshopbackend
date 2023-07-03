@@ -34,7 +34,14 @@ public class ProductsController
     {
         try
         {
-            return productDao.search(categoryId, minPrice, maxPrice, color);
+            // Check to see if the filters are not null
+            if (categoryId != null || minPrice != null || maxPrice != null || color != null) {
+                // Pass the filters to  productDao.search method
+                return productDao.search(categoryId, minPrice, maxPrice, color);
+            } else {
+                // If there are no filters we will retrieve all products
+                return productDao.getAllProducts();
+            }
         }
         catch(Exception ex)
         {
@@ -81,7 +88,7 @@ public class ProductsController
     {
         try
         {
-            productDao.create(product);// bug
+            productDao.update(id, product);// bug
         }
         catch(Exception ex)
         {
