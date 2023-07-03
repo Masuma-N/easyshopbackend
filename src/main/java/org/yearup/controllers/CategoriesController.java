@@ -91,12 +91,19 @@ public class CategoriesController
 
     // add annotation to call this method for a DELETE action - the url path must include the categoryId
     // add annotation to ensure that only an ADMIN can call this function
-    @DeleteMapping("/categories/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ROLE_ADMIN')")//  only an ADMIN can call this function
     public void deleteCategory(@PathVariable("id")  int id)
     {
-        // delete the category by id
-        categoryDao.delete(id);
+        try {
+            Category existingCategory = categoryDao.getById(id);
+            if (existingCategory == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            }
+            categoryDao.delete(id);//calls method to delete the category from the database.
+        } catch (Exception ex) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);//Status code 500 is thrown
+        }
     }
 }
