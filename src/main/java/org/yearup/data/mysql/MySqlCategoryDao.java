@@ -3,6 +3,8 @@ package org.yearup.data.mysql;
 import org.springframework.stereotype.Component;
 import org.yearup.data.CategoryDao;
 import org.yearup.models.Category;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -11,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ArrayList;
+import org.springframework.web.server.ResponseStatusException;
 
 @Component
 public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao {
@@ -53,10 +56,10 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao {
     }
 
     @Override
-    public Category create(Category category) {
-        String query = "INSERT INTO categories (name, description) VALUES (?, ?)";
+    public ResponseEntity<Category> create(Category category) {
+        String sql = "INSERT INTO categories (name, description) VALUES (?, ?)";
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement statement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, category.getName());
             statement.setString(2, category.getDescription());
             statement.executeUpdate();
@@ -64,13 +67,13 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao {
                 if (resultSet.next()) {
                     int generatedId = resultSet.getInt(1);
                     category.setCategoryId(generatedId);
-                    return category;
+                    return new ResponseEntity<>(category, HttpStatus.CREATED);
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException();
         }
-        return category;
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
