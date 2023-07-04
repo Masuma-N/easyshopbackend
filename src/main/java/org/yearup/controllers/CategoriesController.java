@@ -15,10 +15,10 @@ import java.util.List;
 
 // annotations for cross site origin requests
 @RestController// annotation to make this rest controller
-@RequestMapping("/categories")// makes the controller the endpoint for the following url
+@RequestMapping("/categories")// makes the controller the endpoint
+// for the following url http://localhost:8080/categories
+
 @CrossOrigin
-
-
 public class CategoriesController
 {
     private CategoryDao categoryDao;
@@ -33,7 +33,7 @@ public class CategoriesController
     }
     // add the appropriate annotation for a get action
     @GetMapping()
-    @PreAuthorize("permitALL()")
+    @PreAuthorize("permitAll()")
     public List<Category> getAll()
     {
         // find and return all categories
@@ -44,10 +44,14 @@ public class CategoriesController
     @GetMapping("/{id}")
     @PreAuthorize("permitAll()")
 
-    public Category getById(@PathVariable int id)
-    {
-        // get the category by id
-        return categoryDao.getById(id);
+    public ResponseEntity<Category> getById(@PathVariable int id) {
+        Category category = categoryDao.getById(id);
+
+        if (category == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(category);
     }
 
     // the url to return all products in category 1 would look like this
