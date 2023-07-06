@@ -72,8 +72,9 @@ public class AuthenticationController {
 
 
             boolean exists = userDao.exists(newUser.getUsername());
-            if (exists) {//
+            if (exists) {// indicates that the requested action of registering a user cannot be performed because a user with the same username already exists.
                 throw new ResponseStatusException(HttpStatus.CREATED, "User Already Exists.");
+                //throws a ResponseStatusException object.
             }
         try {
 
