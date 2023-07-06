@@ -72,7 +72,7 @@ public class AuthenticationController {
 
 
             boolean exists = userDao.exists(newUser.getUsername());
-            if (exists) {
+            if (exists) {//
                 throw new ResponseStatusException(HttpStatus.CREATED, "User Already Exists.");
             }
         try {
